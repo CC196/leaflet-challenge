@@ -13,7 +13,7 @@ function createMap(EQ){
         center: [
           40.52, 34.34
         ],
-        zoom: 2,
+        zoom: 3,
         layers: [lightmap,EQ]
       });
 };
@@ -34,8 +34,10 @@ function createFeatures(featuresData){
         "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
     }
     var earthquakes = L.geoJSON(featuresData, 
-      {pointToLayer: (feature, latlng) => {console.log(feature.properties.place)
-        return new L.Circle(latlng,markerSize(latlng.alt));},
+      {pointToLayer: (feature, latlng) => {console.log(latlng.alt+chooseColor(latlng.alt))
+        return new L.Circle(latlng,
+        {radius:markerSize(feature.properties.mag),
+          color:"#636363",fillColor: chooseColor(latlng.alt),fillOpacity:1,weight: 1});},
     
       onEachFeature: onEachFeature
     });
@@ -44,8 +46,27 @@ function createFeatures(featuresData){
 };
 
 function markerSize(num){
-  return num*1000;
+  return num*50000;
 }
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", function(data){
+
+function chooseColor(depth) {
+  var color;
+  if(depth < 10){
+    color = "#ffffd4"
+  }else if(10 <= depth && depth < 30){
+    color = "#fee391"
+  }else if(30 <= depth && depth < 50){
+    color = "#fec44f"
+  }else if(50 <= depth && depth < 70){
+    color = "#fe9929"
+  }else if(70 <= depth && depth < 90){
+    color = "#d95f0e"
+  }else{
+    color = "#993404"
+  };
+  return color;
+};
+
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson", function(data){
     createFeatures(data.features);
 });
