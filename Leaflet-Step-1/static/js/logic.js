@@ -11,11 +11,27 @@ function createMap(EQ){
 
     var myMap = L.map("map", {
         center: [
-          40.52, 34.34
+          34.05, -118.25
         ],
         zoom: 3,
         layers: [lightmap,EQ]
       });
+
+    var legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend')
+      grades = [-10,10,30,50,70,90],
+      labels = [];
+
+      for (var i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+              '<i style="background:' + chooseColor(grades[i] + 1) + '"></i> ' +
+              grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+      }
+
+    return div;
+    }
+    legend.addTo(myMap)
 };
 function createFeatures(featuresData){
     // var earthquakes = [];
@@ -46,7 +62,7 @@ function createFeatures(featuresData){
 };
 
 function markerSize(num){
-  return num*50000;
+  return num*20000;
 }
 
 function chooseColor(depth) {
